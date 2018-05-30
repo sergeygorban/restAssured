@@ -1,6 +1,7 @@
 import io.restassured.RestAssured;
 import io.restassured.response.Response;
 
+import java.lang.reflect.Type;
 import java.util.Map;
 
 public class Requests {
@@ -11,20 +12,22 @@ public class Requests {
                 .baseUri(url)
                 .body(body)
                 .log().all()
-                .post();
-
+                .post()
+                .then().log().all()
+                .extract().response();
     }
 
+    public <T extends EntityRespTest> T sendRequest(Api api) throws ClassNotFoundException {
 
-    public static void main(String[] args) {
+        return sendPost(
+                api.getHeaders(),
+                api.getUrl(),
+                new EntityTest("User", "Name", "Age").createFirstEntity()
+        ).body().as((Type) Class.forName(api.getClassName()));
+    }
 
-        new Requests()
-                .sendPost(
-                        Api.TEST.getHeaders(),
-                        Api.TEST.getUrl(),
-                        new EntityTest("User", "Name", "Age").createFirstEntity()
-                );
+    public static void main(String[] args) throws ClassNotFoundException {
 
-
+        System.out.println(new Requests().sendRequest(Api.TEST).getAttempt());
     }
 }

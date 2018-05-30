@@ -11,4 +11,16 @@ public class EntityTest extends EntityForRequests {
         this.param_6 = param_6;
 
     }
+
+    public String getParam_4() {
+        return param_4;
+    }
+
+    public String getParam_5() {
+        return param_5;
+    }
+
+    public String getParam_6() {
+        return param_6;
+    }
 }
