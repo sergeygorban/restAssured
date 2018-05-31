@@ -3,6 +3,7 @@ import io.restassured.response.Response;
 import org.testng.annotations.Test;
 
 import java.io.IOException;
+import java.util.stream.Stream;
 
 import static org.assertj.core.api.Assertions.*;
 public class FirstTest {
@@ -13,24 +14,48 @@ public class FirstTest {
         EntityForRequests entityTest =
                 new EntityTest("User", "Name", "Age");
 
-        Response firstResponse = new Requests()
+        String respons = new Requests()
                 .sendPost(
                         Api.TEST.getHeaders(),
                         Api.TEST.getUrl(),
-                        entityTest.createFirstEntity()
-                );
+                        entityTest.createFirstEntity())
+                .then()
+                .assertThat().statusCode(200)
+                .extract().body().asString();
 
-        assertThat(firstResponse.statusCode()).isEqualTo(200);
-        assertThat(firstResponse.as(EntityResponses.class).getStatus()).isEqualTo("success");
+        assertThat(respons)
+                .contains("status\": \"success")
+                .contains("\"id\"");
 
-        Response secondResponse = new Requests()
-                .sendPost(
-                        Api.TEST.getHeaders(),
-                        Api.TEST.getUrl(),
-                        entityTest.createSecondEntity()
-                );
+        Stream.iterate(0, n -> n + 2)
+                .limit(10)
+                .forEach(System.out::println);
 
-        entityTest.createFirstEntity();
+/*
+        for (int i = 0; i <= 3; i++) {
+            String a = new Requests().sendPost(Api.TEST.getHeaders(), Api.TEST.getUrl(), entityTest.createSecondEntity())
+                    .then()
+                    .assertThat().statusCode(200)
+                    .extract().body().asString();
+
+            if (a.contains("success")) break;
+            Requests.expect(5000);
+            throw new RuntimeException("Нет Ответа");
+        }
+*/
+
+
+   /*
+        System.out.println(new Requests().sendPost(Api.TEST.getHeaders(),Api.TEST.getUrl(),entityTest.createSecondEntity()).then().extract().body().asString() + "!!!!!!!!!!");
+
+        Stream.generate(() -> new Requests().sendPost(Api.TEST.getHeaders(),Api.TEST.getUrl(),entityTest.createSecondEntity()))
+                //.takeWhile(re -> re.then().extract().body().asString().contains("success"))
+                .limit(3)
+                .peek(res -> Requests.expect(10000))
+                .filter(res -> res.body().asString().contains("success"))
+                .forEach(e -> System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!"));
+*/
+
 
 
 
