@@ -27,9 +27,7 @@ public class FirstTest {
                 .contains("status\": \"success")
                 .contains("\"id\"");
 
-        Stream.iterate(0, n -> n + 2)
-                .limit(10)
-                .forEach(System.out::println);
+
 
 /*
         for (int i = 0; i <= 3; i++) {
@@ -45,16 +43,25 @@ public class FirstTest {
 */
 
 
-   /*
-        System.out.println(new Requests().sendPost(Api.TEST.getHeaders(),Api.TEST.getUrl(),entityTest.createSecondEntity()).then().extract().body().asString() + "!!!!!!!!!!");
 
-        Stream.generate(() -> new Requests().sendPost(Api.TEST.getHeaders(),Api.TEST.getUrl(),entityTest.createSecondEntity()))
-                //.takeWhile(re -> re.then().extract().body().asString().contains("success"))
-                .limit(3)
-                .peek(res -> Requests.expect(10000))
-                .filter(res -> res.body().asString().contains("success"))
-                .forEach(e -> System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!"));
-*/
+
+        //System.out.println(new Requests().sendPost(Api.TEST.getHeaders(),Api.TEST.getUrl(),entityTest.createSecondEntity()).then().extract().body().asString() + "!!!!!!!!!!");
+
+        Stream<Response> asd = Stream.generate(() -> new Requests().sendPost(Api.TEST.getHeaders(),Api.TEST.getUrl(),entityTest.createSecondEntity()))
+                //.takeWhile(re -> !re.equals("3"))
+                .takeWhile(re -> !re.body().asString().contains("1success"))
+                .peek(res -> Requests.expect(5000))
+                
+                .limit(3);
+        System.out.println(asd.findFirst().get().then().extract().body().asString());
+
+
+
+                //.
+                //
+                //.filter(res -> res.body().asString().contains("success"))
+                //.forEach(re -> System.out.println("!!!!!!!!!!!!!!!!!!!!!!!!!!"));
+
 
 
 
